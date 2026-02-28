@@ -140,7 +140,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         resin = round(volume * part_a / total, 3)
 hardener = round(volume * part_b / total, 3)
-        volume = round(volume, 3)
+    volume = round(volume, 3)
 
         await query.message.reply_text(
             f"📐 Размер: {length} × {width} × {height_mm} мм\n\n"
