@@ -82,7 +82,10 @@ async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["height"] = float(update.message.text)
 
-        keyboard = [[InlineKeyboardButton(r, callback_data=f"ratio:{r}")] for r in ratios]
+        keyboard = [
+            [InlineKeyboardButton(r, callback_data=f"ratio:{r}")]
+            for r in ratios
+        ]
 
         await update.message.reply_text(
             "Выберите пропорцию:",
@@ -99,13 +102,17 @@ async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+
     data = query.data
 
     if data.startswith("ratio:"):
         ratio = data.replace("ratio:", "")
         context.user_data["ratio"] = ratio
 
-        keyboard = [[InlineKeyboardButton(f"+{e}", callback_data=f"extra:{e}")] for e in extra_options]
+        keyboard = [
+            [InlineKeyboardButton(f"+{e}", callback_data=f"extra:{e}")]
+            for e in extra_options
+        ]
 
         await query.message.reply_text(
             f"Пропорция выбрана: {ratio}\nВыберите запас:",
@@ -132,8 +139,8 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         total = part_a + part_b
 
         resin = round(volume * part_a / total, 3)
-        hardener = round(volume * part_b / total, 3)
-volume = round(volume, 3)
+hardener = round(volume * part_b / total, 3)
+        volume = round(volume, 3)
 
         await query.message.reply_text(
             f"📐 Размер: {length} × {width} × {height_mm} мм\n\n"
@@ -172,7 +179,10 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=f"Новая работа\nИмя: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
     )
 
-    await update.message.reply_text("Фото получено. Спасибо!", reply_markup=final_buttons())
+    await update.message.reply_text(
+        "Фото получено. Спасибо!",
+        reply_markup=final_buttons()
+    )
 
 
 conv = ConversationHandler(
