@@ -2,7 +2,7 @@ import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ConversationHandler, ContextTypes, CallbackQueryHandler, filters
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("8653328794:AAHS3WVbjA8_eP7qq7Qdrop3RsdNKITc9PQ")
 PASSWORD = "1234"
 ADMIN_ID = 891530001
 
