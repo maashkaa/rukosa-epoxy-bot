@@ -1,16 +1,11 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    ConversationHandler,
-    ContextTypes,
-    CallbackQueryHandler,
-    filters,
-)
 
-TOKEN = os.environ.get("8653328794:AAGrsAs6OzF4hIZusXB8CENoyMjcBXpaguM")
+print("ENV TOKEN =", os.getenv("TOKEN"))
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ConversationHandler, ContextTypes, CallbackQueryHandler, filters
+
+TOKEN = os.getenv("TOKEN")
 PASSWORD = "0310"
 ADMIN_ID = 891530001
 
