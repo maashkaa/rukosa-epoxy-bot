@@ -118,7 +118,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Пропорция выбрана: {ratio}\nВыберите запас:",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
-
+    
     elif data.startswith("extra:"):
         extra = data.replace("extra:", "")
         ratio = context.user_data["ratio"]
@@ -139,7 +139,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         total = part_a + part_b
 
         resin = round(volume * part_a / total, 3)
-hardener = round(volume * part_b / total, 3)
+        hardener = round(volume * part_b / total, 3)
         volume = round(volume, 3)
 
         await query.message.reply_text(
