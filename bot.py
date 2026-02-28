@@ -1,30 +1,16 @@
 import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    ConversationHandler,
-    ContextTypes,
-    CallbackQueryHandler,
-    filters,
-)
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ConversationHandler, ContextTypes, CallbackQueryHandler, filters
 
-TOKEN = os.environ.get("TOKEN")
+TOKEN = os.getenv("TOKEN")
 PASSWORD = "0310"
 ADMIN_ID = 891530001
 
 ASK_PASSWORD, LENGTH, WIDTH, HEIGHT = range(4)
 authorized_users = set()
 
-ratios = [
-    "2:1", "3:1", "4:1", "1:1",
-    "100:60", "100:50", "100:40",
-    "10:1", "10:6", "10:4"
-]
-
-extra_options = ["0%", "5%", "10%"]
-
+ratios = ["2:1","3:1","4:1","1:1","100:60","100:50","100:40","10:1","10:6","10:4"]
+extra_options = ["0%","5%","10%"]
 
 def final_buttons():
     return InlineKeyboardMarkup([
@@ -32,14 +18,11 @@ def final_buttons():
         [InlineKeyboardButton("🔄 Новый расчет", callback_data="restart")]
     ])
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
-
     if update.effective_user.id in authorized_users:
         await update.message.reply_text("Введите длину в см:")
         return LENGTH
-
     await update.message.reply_text(
         "✨ Добро пожаловать в профессиональный калькулятор эпоксидной смолы RUKOSA.\n\n"
         "🍀 Этот инструмент поможет точно рассчитать количество смолы и отвердителя для вашего изделия.\n\n"
@@ -47,16 +30,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     return ASK_PASSWORD
 
-
 async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == PASSWORD:
         authorized_users.add(update.effective_user.id)
         await update.message.reply_text("🔓 Доступ разрешен.\nВведите длину в см:")
         return LENGTH
-    else:
-        await update.message.reply_text("Неверный пароль.")
-        return ASK_PASSWORD
-
+    await update.message.reply_text("Неверный пароль.")
+    return ASK_PASSWORD
 
 async def get_length(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -67,7 +47,6 @@ async def get_length(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Введите число.")
         return LENGTH
 
-
 async def get_width(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["width"] = float(update.message.text)
@@ -77,52 +56,30 @@ async def get_width(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Введите число.")
         return WIDTH
 
-
 async def get_height(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         context.user_data["height"] = float(update.message.text)
-
-        keyboard = [
-            [InlineKeyboardButton(r, callback_data=f"ratio:{r}")]
-            for r in ratios
-        ]
-
-        await update.message.reply_text(
-            "Выберите пропорцию:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
+        keyboard = [[InlineKeyboardButton(r, callback_data=f"ratio:{r}")] for r in ratios]
+        await update.message.reply_text("Выберите пропорцию:", reply_markup=InlineKeyboardMarkup(keyboard))
         return ConversationHandler.END
-
     except:
         await update.message.reply_text("Введите число.")
         return HEIGHT
 
-
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
     data = query.data
 
     if data.startswith("ratio:"):
         ratio = data.replace("ratio:", "")
         context.user_data["ratio"] = ratio
-
-        keyboard = [
-            [InlineKeyboardButton(f"+{e}", callback_data=f"extra:{e}")]
-            for e in extra_options
-        ]
-
-        await query.message.reply_text(
-            f"Пропорция выбрана: {ratio}\nВыберите запас:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        keyboard = [[InlineKeyboardButton(f"+{e}", callback_data=f"extra:{e}")] for e in extra_options]
+        await query.message.reply_text(f"Пропорция выбрана: {ratio}\nВыберите запас:", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data.startswith("extra:"):
         extra = data.replace("extra:", "")
         ratio = context.user_data["ratio"]
-
         length = context.user_data["length"]
         width = context.user_data["width"]
         height_mm = context.user_data["height"]
@@ -139,7 +96,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         total = part_a + part_b
 
         resin = round(volume * part_a / total, 3)
-hardener = round(volume * part_b / total, 3)
+        hardener = round(volume * part_b / total, 3)
         volume = round(volume, 3)
 
         await query.message.reply_text(
@@ -164,26 +121,11 @@ hardener = round(volume * part_b / total, 3)
     elif data == "photo":
         await query.message.reply_text("Отправьте фото готовой работы.")
 
-
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
-
-    await context.bot.forward_message(
-        chat_id=ADMIN_ID,
-        from_chat_id=update.message.chat_id,
-        message_id=update.message.message_id
-    )
-
-    await context.bot.send_message(
-        chat_id=ADMIN_ID,
-        text=f"Новая работа\nИмя: {user.first_name}\nUsername: @{user.username}\nID: {user.id}"
-    )
-
-    await update.message.reply_text(
-        "Фото получено. Спасибо!",
-        reply_markup=final_buttons()
-    )
-
+    await context.bot.forward_message(chat_id=ADMIN_ID, from_chat_id=update.message.chat_id, message_id=update.message.message_id)
+    await context.bot.send_message(chat_id=ADMIN_ID, text=f"Новая работа\nИмя: {user.first_name}\nUsername: @{user.username}\nID: {user.id}")
+    await update.message.reply_text("Фото получено. Спасибо!", reply_markup=final_buttons())
 
 conv = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
@@ -193,7 +135,7 @@ conv = ConversationHandler(
         WIDTH: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_width)],
         HEIGHT: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_height)],
     },
-    fallbacks=[],
+    fallbacks=[]
 )
 
 app = ApplicationBuilder().token(TOKEN).build()
